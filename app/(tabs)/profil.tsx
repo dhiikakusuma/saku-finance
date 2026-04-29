@@ -225,6 +225,12 @@ export default function ProfilTab() {
           </Muted>
           <Card padded={false}>
             <MenuItem
+              icon="bar-chart"
+              label="Laporan & analitik"
+              onPress={() => router.push("/laporan" as any)}
+            />
+            <View style={{ height: 1, backgroundColor: colors.ink100 }} />
+            <MenuItem
               icon="cloud-upload"
               label="Sync cloud"
               right={

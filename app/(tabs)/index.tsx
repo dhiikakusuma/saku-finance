@@ -161,6 +161,42 @@ export default function Dashboard() {
           </Card>
         </View>
 
+        {/* Quick action: Laporan */}
+        <View style={{ paddingHorizontal: spacing.lg, marginTop: spacing.md }}>
+          <Pressable onPress={() => router.push("/laporan" as any)}>
+            <Card>
+              <Row>
+                <Row gap={10}>
+                  <IconTile
+                    name="bar-chart"
+                    bg={colors.brand50}
+                    color={colors.brand700}
+                  />
+                  <View>
+                    <Muted
+                      style={{
+                        color: colors.ink900,
+                        fontWeight: "700",
+                        fontSize: 13,
+                      }}
+                    >
+                      Laporan & Analitik
+                    </Muted>
+                    <Muted style={{ fontSize: 11 }}>
+                      Tren bulanan, kategori, & insight otomatis
+                    </Muted>
+                  </View>
+                </Row>
+                <Ionicons
+                  name="chevron-forward"
+                  size={18}
+                  color={colors.ink400}
+                />
+              </Row>
+            </Card>
+          </Pressable>
+        </View>
+
         {/* Dompet */}
         <View style={{ paddingHorizontal: spacing.lg, marginTop: spacing.lg }}>
           <Row>
