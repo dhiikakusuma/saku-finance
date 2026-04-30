@@ -15,7 +15,11 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.dhiikakusuma.saku"
+      "bundleIdentifier": "com.dhiikakusuma.saku",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Saku butuh akses kamera untuk foto struk belanja (OCR auto-isi nominal).",
+        "NSPhotoLibraryUsageDescription": "Saku butuh akses galeri untuk pilih foto struk yang sudah disimpan."
+      }
     },
     "android": {
       "package": "com.dhiikakusuma.saku",
@@ -24,7 +28,16 @@
         "backgroundColor": "#16a34a"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.USE_EXACT_ALARM",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -34,10 +47,32 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/adaptive-icon.png",
+          "color": "#16a34a",
+          "defaultChannel": "bill-reminders"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Saku butuh akses kamera untuk foto struk (OCR auto-isi nominal).",
+          "photosPermission": "Saku butuh akses galeri untuk pilih foto struk yang sudah disimpan."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "eb5446e9-6447-40a0-a07b-eaaade39d59f"
+      },
+      "router": {}
+    },
+    "owner": "dkaslave"
   }
 }
