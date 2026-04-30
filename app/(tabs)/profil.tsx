@@ -255,6 +255,12 @@ export default function ProfilTab() {
             />
             <View style={{ height: 1, backgroundColor: colors.ink100 }} />
             <MenuItem
+              icon="cloud-upload"
+              label="Sync cloud (backup & restore)"
+              onPress={() => router.push("/sync" as any)}
+            />
+            <View style={{ height: 1, backgroundColor: colors.ink100 }} />
+            <MenuItem
               icon="trash"
               label="Reset semua data"
               danger

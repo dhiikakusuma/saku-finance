@@ -40,6 +40,7 @@ export default function RootLayout() {
               <Stack.Screen name="tagihan" />
               <Stack.Screen name="tabungan" />
               <Stack.Screen name="export" />
+              <Stack.Screen name="sync" />
               <Stack.Screen name="profil/profil-detail" />
               <Stack.Screen name="profil/dompet" />
               <Stack.Screen name="profil/kategori" />

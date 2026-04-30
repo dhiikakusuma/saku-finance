@@ -83,4 +83,12 @@ export type Settings = {
   onboarded: boolean;
   theme: "light" | "dark";
   ocrApiKey?: string;
+  /** Override default Supabase URL (kalau user pakai project sendiri) */
+  supabaseUrl?: string;
+  /** Override default anon key */
+  supabaseAnonKey?: string;
+  /** Auto-backup setiap kali tutup app */
+  autoBackup?: boolean;
+  lastBackupAt?: string;
+  lastRestoreAt?: string;
 };
