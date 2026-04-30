@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMemo } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { currentMonthKey } from "@/lib/format";
@@ -42,6 +43,8 @@ type Actions = {
   ) => void;
   updateProfile: (p: Partial<Profile>) => void;
   togglePin: (enabled: boolean) => void;
+  setTheme: (theme: "light" | "dark") => void;
+  setOcrApiKey: (key: string | undefined) => void;
 
   // wallets
   addWallet: (w: Omit<State["wallets"][number], "id" | "balance"> & { balance?: number }) => void;
@@ -88,6 +91,7 @@ const initialState: State = {
     pinEnabled: false,
     premium: false,
     onboarded: false,
+    theme: "light",
   },
   wallets: initWallets(),
   categories: defaultCategories,
@@ -138,6 +142,12 @@ export const useAppStore = create<State & Actions>()(
 
       togglePin: (enabled) =>
         set((s) => ({ settings: { ...s.settings, pinEnabled: enabled } })),
+
+      setTheme: (theme) =>
+        set((s) => ({ settings: { ...s.settings, theme } })),
+
+      setOcrApiKey: (key) =>
+        set((s) => ({ settings: { ...s.settings, ocrApiKey: key } })),
 
       addWallet: (w) =>
         set((s) => ({
@@ -316,20 +326,23 @@ export const useAppStore = create<State & Actions>()(
 );
 
 export function useTotalBalance(): number {
-  return useAppStore((s) =>
-    s.wallets.reduce((acc, w) => acc + (w.archived ? 0 : w.balance), 0),
+  const wallets = useAppStore((s) => s.wallets);
+  return useMemo(
+    () => wallets.reduce((acc, w) => acc + (w.archived ? 0 : w.balance), 0),
+    [wallets],
   );
 }
 
 export function useMonthSummary(monthKey = currentMonthKey()) {
-  return useAppStore((s) => {
+  const transactions = useAppStore((s) => s.transactions);
+  return useMemo(() => {
     let income = 0;
     let expense = 0;
-    for (const tx of s.transactions) {
+    for (const tx of transactions) {
       if (!tx.date.startsWith(monthKey)) continue;
       if (tx.type === "income") income += tx.amount;
       if (tx.type === "expense") expense += tx.amount;
     }
     return { income, expense, net: income - expense };
-  });
+  }, [transactions, monthKey]);
 }

@@ -1,8 +1,16 @@
 /**
  * Saku design system tokens.
- * Brand: hijau (uang & growth). Light mode only di V1.
+ * Brand: hijau (uang & growth).
+ *
+ * Theme: light + dark. The exported `colors` object is mutable — when theme
+ * switches we Object.assign the new palette in place. Components must be
+ * remounted (e.g. via a `key` on a top-level wrapper) for the change to
+ * propagate, since RN doesn't observe mutations to imported objects.
  */
-export const colors = {
+
+export type ThemeMode = "light" | "dark";
+
+const lightPalette = {
   // Brand
   brand50: "#f0fdf4",
   brand100: "#dcfce7",
@@ -15,7 +23,7 @@ export const colors = {
   brand800: "#166534",
   brand900: "#14532d",
 
-  // Neutrals
+  // Neutrals (ink = text/border, bg = page background, surface = cards)
   ink900: "#0f172a",
   ink800: "#1e293b",
   ink700: "#334155",
@@ -28,6 +36,7 @@ export const colors = {
 
   white: "#ffffff",
   bg: "#f8fafc",
+  surface: "#ffffff",
 
   // Semantic
   success: "#16a34a",
@@ -53,6 +62,87 @@ export const colors = {
     other: "#64748b",
   },
 };
+
+const darkPalette: typeof lightPalette = {
+  // Brand — keep brand vibrant on dark
+  brand50: "#0b2918",
+  brand100: "#0f3a22",
+  brand200: "#15512f",
+  brand300: "#196b3e",
+  brand400: "#22c55e",
+  brand500: "#22c55e",
+  brand600: "#16a34a",
+  brand700: "#86efac",
+  brand800: "#bbf7d0",
+  brand900: "#dcfce7",
+
+  // Neutrals: invert — ink900 = primary text (light), surfaces dark
+  ink900: "#f8fafc",
+  ink800: "#e2e8f0",
+  ink700: "#cbd5e1",
+  ink500: "#94a3b8",
+  ink400: "#64748b",
+  ink300: "#475569",
+  ink200: "#334155",
+  ink100: "#2a3a52",
+  ink50: "#0f172a",
+
+  // `white` is used for card backgrounds → make it the elevated surface
+  white: "#1e293b",
+  bg: "#0b1220",
+  surface: "#1e293b",
+
+  success: "#22c55e",
+  successBg: "#0f3a22",
+  warning: "#fbbf24",
+  warningBg: "#3b2f0b",
+  danger: "#f87171",
+  dangerBg: "#3b1115",
+  info: "#60a5fa",
+  infoBg: "#0c2440",
+
+  cat: {
+    food: "#f87171",
+    transport: "#fbbf24",
+    bill: "#60a5fa",
+    fun: "#c084fc",
+    shopping: "#f472b6",
+    health: "#2dd4bf",
+    education: "#818cf8",
+    saving: "#22c55e",
+    income: "#22c55e",
+    other: "#94a3b8",
+  },
+};
+
+/**
+ * Active palette. Mutated in place by `applyTheme()`. All components import
+ * this and read its values at render time.
+ */
+export const colors: typeof lightPalette = { ...lightPalette };
+
+let activeMode: ThemeMode = "light";
+const subscribers = new Set<(m: ThemeMode) => void>();
+
+export function applyTheme(mode: ThemeMode) {
+  if (mode === activeMode) return;
+  activeMode = mode;
+  const palette = mode === "dark" ? darkPalette : lightPalette;
+  // shallow-copy primitives
+  Object.assign(colors, palette);
+  // deep-copy nested cat
+  Object.assign(colors.cat, palette.cat);
+  subscribers.forEach((cb) => cb(mode));
+}
+
+export function getThemeMode(): ThemeMode {
+  return activeMode;
+}
+
+export function subscribeTheme(cb: (m: ThemeMode) => void): () => void {
+  subscribers.add(cb);
+  return () => subscribers.delete(cb);
+}
 
 export const radius = {
   xs: 6,

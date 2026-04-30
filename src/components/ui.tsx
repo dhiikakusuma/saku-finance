@@ -129,11 +129,12 @@ export function Label({ children, style, ...rest }: TxProps) {
 type ButtonProps = {
   title: string;
   onPress?: () => void;
-  variant?: "primary" | "outline" | "ghost" | "danger";
+  variant?: "primary" | "outline" | "ghost" | "danger" | "light";
   size?: "md" | "lg" | "sm";
   disabled?: boolean;
   icon?: keyof typeof Ionicons.glyphMap;
   style?: ViewStyle;
+  textColor?: string;
   haptic?: boolean;
 };
 
@@ -145,6 +146,7 @@ export function Button({
   disabled,
   icon,
   style,
+  textColor,
   haptic = true,
 }: ButtonProps) {
   const sizing = {
@@ -153,14 +155,17 @@ export function Button({
     lg: { paddingV: 14, paddingH: 18, font: fontSize.md, radius: radius.lg },
   }[size];
 
-  const palette =
+  const basePalette =
     variant === "primary"
       ? { bg: colors.brand600, fg: colors.white, border: "transparent" }
       : variant === "outline"
         ? { bg: "transparent", fg: colors.ink900, border: colors.ink200 }
         : variant === "danger"
           ? { bg: colors.danger, fg: colors.white, border: "transparent" }
-          : { bg: "transparent", fg: colors.brand700, border: "transparent" };
+          : variant === "light"
+            ? { bg: colors.white, fg: colors.brand700, border: "transparent" }
+            : { bg: "transparent", fg: colors.brand700, border: "transparent" };
+  const palette = textColor ? { ...basePalette, fg: textColor } : basePalette;
 
   return (
     <Pressable

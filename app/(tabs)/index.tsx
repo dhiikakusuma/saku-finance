@@ -161,40 +161,79 @@ export default function Dashboard() {
           </Card>
         </View>
 
-        {/* Quick action: Laporan */}
+        {/* Quick actions */}
         <View style={{ paddingHorizontal: spacing.lg, marginTop: spacing.md }}>
-          <Pressable onPress={() => router.push("/laporan" as any)}>
-            <Card>
-              <Row>
-                <Row gap={10}>
-                  <IconTile
-                    name="bar-chart"
-                    bg={colors.brand50}
-                    color={colors.brand700}
-                  />
-                  <View>
-                    <Muted
-                      style={{
-                        color: colors.ink900,
-                        fontWeight: "700",
-                        fontSize: 13,
-                      }}
-                    >
-                      Laporan & Analitik
-                    </Muted>
-                    <Muted style={{ fontSize: 11 }}>
-                      Tren bulanan, kategori, & insight otomatis
-                    </Muted>
-                  </View>
-                </Row>
-                <Ionicons
-                  name="chevron-forward"
-                  size={18}
-                  color={colors.ink400}
+          <Row gap={10}>
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() => router.push("/laporan" as any)}
+            >
+              <Card padded={false} style={{ padding: spacing.md }}>
+                <IconTile
+                  name="bar-chart"
+                  bg={colors.brand50}
+                  color={colors.brand700}
                 />
-              </Row>
-            </Card>
-          </Pressable>
+                <Muted
+                  style={{
+                    color: colors.ink900,
+                    fontWeight: "700",
+                    fontSize: 12,
+                    marginTop: 8,
+                  }}
+                >
+                  Laporan
+                </Muted>
+                <Muted style={{ fontSize: 10 }}>Tren & analitik</Muted>
+              </Card>
+            </Pressable>
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() => router.push("/tagihan" as any)}
+            >
+              <Card padded={false} style={{ padding: spacing.md }}>
+                <IconTile
+                  name="receipt"
+                  bg="#fef3c7"
+                  color="#b45309"
+                />
+                <Muted
+                  style={{
+                    color: colors.ink900,
+                    fontWeight: "700",
+                    fontSize: 12,
+                    marginTop: 8,
+                  }}
+                >
+                  Tagihan
+                </Muted>
+                <Muted style={{ fontSize: 10 }}>Reminder otomatis</Muted>
+              </Card>
+            </Pressable>
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() => router.push("/tabungan" as any)}
+            >
+              <Card padded={false} style={{ padding: spacing.md }}>
+                <IconTile
+                  name="trophy"
+                  bg="#fce7f3"
+                  color="#be185d"
+                />
+                <Muted
+                  style={{
+                    color: colors.ink900,
+                    fontWeight: "700",
+                    fontSize: 12,
+                    marginTop: 8,
+                  }}
+                >
+                  Target
+                </Muted>
+                <Muted style={{ fontSize: 10 }}>Tabungan & goals</Muted>
+              </Card>
+            </Pressable>
+          </Row>
         </View>
 
         {/* Dompet */}

@@ -118,7 +118,7 @@ export default function OnboardingSlides() {
             title={step === slides.length - 1 ? "Mulai setup" : "Lanjut"}
             onPress={next}
             size="lg"
-            style={{ backgroundColor: colors.white }}
+            variant="light"
           />
           <View style={{ alignItems: "center", marginTop: spacing.md }}>
             <Pressable onPress={() => setStep((step + 1) % slides.length)}>

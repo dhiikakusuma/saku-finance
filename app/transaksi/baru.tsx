@@ -1,8 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Modal,
   Platform,
   Pressable,
@@ -13,6 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Card, Chip, IconTile, Muted, Row, Segmented } from "@/components/ui";
 import { formatRupiah } from "@/lib/format";
+import { ocrFromBase64 } from "@/lib/ocr";
 import { useAppStore } from "@/store/useAppStore";
 import { colors, fontSize, radius, spacing } from "@/theme";
 
@@ -58,6 +62,89 @@ export default function NewTransaction() {
   const [showCatPicker, setShowCatPicker] = useState(false);
   const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [pickingTo, setPickingTo] = useState(false);
+  const [ocrBusy, setOcrBusy] = useState(false);
+
+  const ocrApiKey = useAppStore((s) => s.settings.ocrApiKey);
+
+  const handleScanReceipt = async () => {
+    Alert.alert("Scan struk", "Pilih sumber gambar:", [
+      { text: "Batal", style: "cancel" },
+      {
+        text: "Kamera",
+        onPress: async () => {
+          const perm = await ImagePicker.requestCameraPermissionsAsync();
+          if (!perm.granted) {
+            Alert.alert("Izin ditolak", "Akses kamera diperlukan untuk scan struk.");
+            return;
+          }
+          const r = await ImagePicker.launchCameraAsync({
+            mediaTypes: ["images"],
+            quality: 0.6,
+            base64: true,
+          });
+          if (!r.canceled && r.assets[0]?.base64) {
+            await runOcr(r.assets[0].base64);
+          }
+        },
+      },
+      {
+        text: "Galeri",
+        onPress: async () => {
+          const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+          if (!perm.granted) {
+            Alert.alert("Izin ditolak", "Akses galeri diperlukan.");
+            return;
+          }
+          const r = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ["images"],
+            quality: 0.6,
+            base64: true,
+          });
+          if (!r.canceled && r.assets[0]?.base64) {
+            await runOcr(r.assets[0].base64);
+          }
+        },
+      },
+    ]);
+  };
+
+  const runOcr = async (base64: string) => {
+    setOcrBusy(true);
+    try {
+      const result = await ocrFromBase64(base64, ocrApiKey || "helloworld");
+      const lines: string[] = [];
+      if (result.amount !== null && result.amount > 0) {
+        setAmount(String(result.amount));
+        lines.push(`Nominal: Rp ${result.amount.toLocaleString("id-ID")}`);
+      }
+      if (result.merchant) {
+        setNote((prev) =>
+          prev.trim().length > 0 ? prev : `Belanja di ${result.merchant}`,
+        );
+        lines.push(`Toko: ${result.merchant}`);
+      }
+      if (result.amount === null && !result.merchant) {
+        Alert.alert(
+          "OCR gagal",
+          "Tidak bisa baca struk ini. Coba foto ulang dengan lebih jelas, atau isi manual.",
+        );
+        return;
+      }
+      Alert.alert(
+        "Struk berhasil dibaca",
+        lines.join("\n") +
+          "\n\nReview dulu nominalnya sebelum simpan.",
+      );
+    } catch (e) {
+      Alert.alert(
+        "OCR error",
+        String(e instanceof Error ? e.message : e) +
+          "\n\nKey OCR.space mungkin sudah penuh. Coba isi API key sendiri di Profil → Pengaturan OCR.",
+      );
+    } finally {
+      setOcrBusy(false);
+    }
+  };
 
   const filteredCategories = useMemo(() => {
     if (type === "expense") return categories.filter((c) => c.kind === "expense");
@@ -173,6 +260,53 @@ export default function NewTransaction() {
             }
           }}
         />
+
+        {type === "expense" ? (
+          <Pressable
+            onPress={handleScanReceipt}
+            disabled={ocrBusy}
+            style={{ marginTop: spacing.md }}
+          >
+            <Card
+              style={{
+                borderStyle: "dashed",
+                borderColor: colors.brand500,
+                paddingVertical: 12,
+              }}
+            >
+              <Row gap={10}>
+                {ocrBusy ? (
+                  <ActivityIndicator size="small" color={colors.brand700} />
+                ) : (
+                  <IconTile
+                    name="camera"
+                    bg={colors.brand50}
+                    color={colors.brand700}
+                  />
+                )}
+                <View style={{ flex: 1 }}>
+                  <Muted
+                    style={{
+                      color: colors.ink900,
+                      fontWeight: "700",
+                      fontSize: 13,
+                    }}
+                  >
+                    {ocrBusy ? "Membaca struk…" : "Scan struk (auto-isi nominal)"}
+                  </Muted>
+                  <Muted style={{ fontSize: 11 }}>
+                    Foto struk → nominal & toko terisi otomatis
+                  </Muted>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={18}
+                  color={colors.ink400}
+                />
+              </Row>
+            </Card>
+          </Pressable>
+        ) : null}
 
         <View style={{ alignItems: "center", marginTop: spacing.xl }}>
           <Muted style={{ fontSize: 11 }}>Nominal</Muted>

@@ -54,6 +54,7 @@ export default function ProfilTab() {
   const profile = useAppStore((s) => s.profile);
   const settings = useAppStore((s) => s.settings);
   const togglePin = useAppStore((s) => s.togglePin);
+  const setTheme = useAppStore((s) => s.setTheme);
   const resetAll = useAppStore((s) => s.resetAll);
 
   const handleReset = () => {
@@ -247,7 +248,11 @@ export default function ProfilTab() {
               }}
             />
             <View style={{ height: 1, backgroundColor: colors.ink100 }} />
-            <MenuItem icon="cloud-download" label="Export PDF / Excel" />
+            <MenuItem
+              icon="cloud-download"
+              label="Export PDF / Excel"
+              onPress={() => router.push("/export" as any)}
+            />
             <View style={{ height: 1, backgroundColor: colors.ink100 }} />
             <MenuItem
               icon="trash"
@@ -286,10 +291,28 @@ export default function ProfilTab() {
             />
             <View style={{ height: 1, backgroundColor: colors.ink100 }} />
             <MenuItem
-              icon="moon"
+              icon={settings.theme === "dark" ? "moon" : "sunny"}
               label="Tema gelap"
               right={
-                <Chip label="PRO" bg="#fef3c7" color="#92400e" />
+                <Pressable
+                  onPress={() =>
+                    setTheme(settings.theme === "dark" ? "light" : "dark")
+                  }
+                >
+                  <Chip
+                    label={settings.theme === "dark" ? "Aktif" : "Off"}
+                    bg={
+                      settings.theme === "dark"
+                        ? colors.brand50
+                        : colors.ink100
+                    }
+                    color={
+                      settings.theme === "dark"
+                        ? colors.brand700
+                        : colors.ink500
+                    }
+                  />
+                </Pressable>
               }
             />
           </Card>

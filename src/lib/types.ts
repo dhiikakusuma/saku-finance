@@ -81,4 +81,6 @@ export type Settings = {
   pinEnabled: boolean;
   premium: boolean;
   onboarded: boolean;
+  theme: "light" | "dark";
+  ocrApiKey?: string;
 };
