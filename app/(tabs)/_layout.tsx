@@ -2,10 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { Platform, Pressable, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/theme";
 
 export default function TabsLayout() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 12);
   return (
     <Tabs
       screenOptions={{
@@ -13,8 +16,8 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.brand600,
         tabBarInactiveTintColor: colors.ink400,
         tabBarStyle: {
-          height: 64,
-          paddingBottom: 8,
+          height: 64 + bottomInset,
+          paddingBottom: bottomInset,
           paddingTop: 6,
           borderTopColor: colors.ink200,
           backgroundColor: colors.white,
